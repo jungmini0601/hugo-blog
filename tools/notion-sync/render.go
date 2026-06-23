@@ -87,11 +87,18 @@ func renderBlocks(c *Client, blocks []Block, dl func(string) (string, error), de
 	var b strings.Builder
 	indent := strings.Repeat("  ", depth)
 	num := 0
+	prevList := false
 
 	for _, blk := range blocks {
 		if blk.Type != "numbered_list_item" {
 			num = 0
 		}
+		// 리스트 그룹이 끝나고 비(非)리스트 블록이 오면 빈 줄을 넣는다.
+		// (빈 줄이 없으면 뒤따르는 문단이 마지막 리스트 항목에 흡수됨)
+		if prevList && !isListItem(blk.Type) {
+			b.WriteString("\n")
+		}
+		prevList = isListItem(blk.Type)
 
 		switch blk.Type {
 		case "paragraph":
@@ -192,6 +199,15 @@ func renderRich(rts []RichText) string {
 		b.WriteString(t)
 	}
 	return b.String()
+}
+
+func isListItem(t string) bool {
+	switch t {
+	case "bulleted_list_item", "numbered_list_item", "to_do":
+		return true
+	default:
+		return false
+	}
 }
 
 func plainText(rts []RichText) string {
