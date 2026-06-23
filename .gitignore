@@ -1,0 +1,22 @@
+# Hugo
+/public/
+/resources/_gen/
+/.hugo_build.lock
+hugo_stats.json
+
+# Node
+/node_modules/
+
+# Go
+/tools/notion-sync/notion-sync
+*.test
+
+# Env / secrets
+.env
+.env.*
+
+# OS / editor
+.DS_Store
+*.swp
+.idea/
+.vscode/
