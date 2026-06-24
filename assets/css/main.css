@@ -19,8 +19,11 @@
   --color-border-strong: #dbdcdf;
   --color-fg: #1b1c1e;
   --color-fg-muted: #5a5c63;
-  --color-fg-subtle: #878a93;
-  --color-accent: #1ba673;
+  /* #878a93(원본 디자인)은 11px 메타 텍스트에서 WCAG AA(4.5:1) 미달 → 살짝 진하게 */
+  --color-fg-subtle: #6d7077;
+  /* 본문 링크/텍스트로 쓰이는 액센트. 원본 #1ba673은 흰 배경 대비 3.1:1로 AA 미달이라
+     같은 계열의 진한 녹색(#0f7f5f, ~4.9:1)으로 조정. 사이드바 액센트는 별도(밝은) 유지. */
+  --color-accent: #0f7f5f;
   --color-code: #f4f5f6;
 
   /* 배지 */
@@ -35,13 +38,24 @@
   --color-sb-border: #37383c;
   --color-sb-fg: #f1f2f3;
   --color-sb-fg-muted: #aeb0b6;
-  --color-sb-fg-subtle: #70737c;
+  /* #70737c(원본)은 다크 배경 대비 3.6:1로 AA 미달 → 살짝 밝게(#8a8c93, ~5.2:1) */
+  --color-sb-fg-subtle: #8a8c93;
   --color-sb-accent: #0dd78c;
 }
 
 ::selection { background: #d8f5e9; }
 
-html { scroll-behavior: smooth; }
+/* 모션 최소화 선호 시 부드러운 스크롤/카드 호버 이동 비활성화 */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+
+/* 키보드 포커스 링 (마우스 클릭에는 표시되지 않음) */
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+aside :focus-visible { outline-color: var(--color-sb-accent); }
 
 /* 모바일에서 햄버거로 펼친 사이드바 패널 ([attr].class 가 .hidden 보다 우선) */
 [data-menu-panel].is-open { display: flex; }
@@ -64,6 +78,7 @@ html { scroll-behavior: smooth; }
 a.tag-badge:hover { color: var(--color-accent); }
 
 /* 얇은 스크롤바 (디자인 원본의 .sb-scroll) */
+.sb-scroll { scrollbar-width: thin; scrollbar-color: var(--color-border-strong) transparent; }
 .sb-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
 .sb-scroll::-webkit-scrollbar-thumb { background: var(--color-border-strong); border-radius: 8px; }
 .sb-scroll::-webkit-scrollbar-track { background: transparent; }
