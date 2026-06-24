@@ -1,0 +1,24 @@
+{{- /* giscus 댓글. hugo.toml [params.giscus] 의 repo/repoId/categoryId 가 모두
+       채워졌을 때만 렌더된다. 비어 있으면 아무것도 출력하지 않는다. */ -}}
+{{- with site.Params.giscus -}}
+{{- if and .repo .repoId .categoryId -}}
+<section class="mt-12 pt-7 border-t border-border">
+  <h3 class="m-0 mb-5 font-display font-semibold text-lg tracking-[-0.01em] text-fg">댓글</h3>
+  <script src="https://giscus.app/client.js"
+          data-repo="{{ .repo }}"
+          data-repo-id="{{ .repoId }}"
+          data-category="{{ .category | default "Announcements" }}"
+          data-category-id="{{ .categoryId }}"
+          data-mapping="{{ .mapping | default "pathname" }}"
+          data-strict="1"
+          data-reactions-enabled="1"
+          data-emit-metadata="0"
+          data-input-position="top"
+          data-theme="{{ .theme | default "light" }}"
+          data-lang="ko"
+          crossorigin="anonymous"
+          async>
+  </script>
+</section>
+{{- end -}}
+{{- end -}}

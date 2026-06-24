@@ -9,9 +9,29 @@ enableRobotsTXT = true
 
 [params]
   description = "개인 기술 블로그"
+  # 사이드바 로고 아래 작은 캡션
+  tagline = "notes on building software"
+  [params.author]
+    name = "Novel"
+    bio = "소프트웨어를 만드는 과정에 대해 기록합니다."
+  # 비워두면 해당 링크는 사이드바에 표시되지 않음
+  [params.social]
+    github = "https://github.com/Novel-OxO"
+    linkedin = ""
+    rss = true
+  # GitHub Discussions 기반 댓글(giscus). 값을 채우면 아티클 하단에 자동 노출.
+  # https://giscus.app 에서 repo / repoId / category / categoryId 발급
+  [params.giscus]
+    repo = ""
+    repoId = ""
+    category = "Announcements"
+    categoryId = ""
+    mapping = "pathname"
+    theme = "light"
 
 [taxonomies]
   tag = "tags"
+  category = "categories"
 
 [markup]
   [markup.highlight]

@@ -1,0 +1,111 @@
+{{- $page := . -}}
+{{- $home := site.Home.RelPermalink -}}
+{{- $allActive := or $page.IsHome (eq $page.Kind "section") -}}
+<aside class="w-full lg:w-[316px] lg:flex-shrink-0 bg-sb-bg text-sb-fg border-b border-sb-border lg:border-b-0 lg:border-r">
+  {{/* 다크 배경은 aside가 본문 높이만큼 채우고, 실제 내용은 뷰포트 높이로 sticky 스크롤 */}}
+  <div class="sb-scroll flex flex-col lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto">
+
+  {{/* ── 상단 바: 로고 + (모바일) 토글 ── */}}
+  <div class="flex items-center justify-between gap-3 px-5 py-4 lg:px-6 lg:pt-7 lg:pb-1">
+    <a href="{{ $home }}" class="flex items-center gap-3 min-w-0">
+      <span class="flex-shrink-0 w-[34px] h-[34px] rounded-[11px] bg-sb-accent flex items-center justify-center font-display font-bold text-[18px] text-[#06140d]">{{ substr site.Title 0 1 | lower }}</span>
+      <span class="flex flex-col leading-none min-w-0">
+        <span class="font-display font-semibold text-base tracking-tight text-sb-fg truncate">{{ site.Title }}</span>
+        {{ with site.Params.tagline }}<span class="font-mono text-[10px] tracking-[0.06em] uppercase text-sb-fg-subtle mt-[3px] truncate">{{ . }}</span>{{ end }}
+      </span>
+    </a>
+    <button type="button" data-menu-toggle aria-expanded="false" aria-controls="sb-panel" aria-label="메뉴 토글"
+            class="lg:hidden flex-shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-[10px] border border-sb-border text-sb-fg-muted hover:text-sb-fg hover:bg-sb-surface transition">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="2" y1="4" x2="14" y2="4"/><line x1="2" y1="8" x2="14" y2="8"/><line x1="2" y1="12" x2="14" y2="12"/></svg>
+    </button>
+  </div>
+
+  {{/* ── 접히는 패널 (모바일은 토글, lg 이상은 항상 표시) ── */}}
+  <div id="sb-panel" data-menu-panel class="hidden lg:flex flex-col gap-7 px-5 pt-3 pb-6 lg:px-6 lg:pt-6 lg:pb-7 lg:flex-1">
+
+    {{/* 저자 카드 */}}
+    {{ with site.Params.author }}
+    <div class="flex flex-col items-center text-center gap-3">
+      <div class="w-[52px] h-[52px] rounded-full bg-sb-accent/15 flex items-center justify-center font-display font-semibold text-[19px] text-sb-accent">{{ substr .name 0 1 | upper }}</div>
+      <div class="flex flex-col gap-1">
+        <span class="font-semibold text-base text-sb-fg leading-tight">{{ .name }}</span>
+        {{ with .bio }}<span class="text-[12.5px] text-sb-fg-muted leading-relaxed">{{ . }}</span>{{ end }}
+      </div>
+    </div>
+    {{ end }}
+
+    {{/* 소셜 링크 */}}
+    {{ with site.Params.social }}
+    <div class="flex flex-col gap-1">
+      {{ with .github }}
+      <a href="{{ . }}" target="_blank" rel="me noopener" class="flex items-center gap-3 px-[13px] py-[11px] rounded-[11px] text-sb-fg-muted hover:bg-sb-surface hover:text-sb-fg transition text-[14.5px] border border-transparent">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" class="flex-shrink-0"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        <span>GitHub</span>
+      </a>
+      {{ end }}
+      {{ with .linkedin }}
+      <a href="{{ . }}" target="_blank" rel="me noopener" class="flex items-center gap-3 px-[13px] py-[11px] rounded-[11px] text-sb-fg-muted hover:bg-sb-surface hover:text-sb-fg transition text-[14.5px] border border-transparent">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" class="flex-shrink-0"><path d="M13.63 0H2.37A2.37 2.37 0 000 2.37v11.26A2.37 2.37 0 002.37 16h11.26A2.37 2.37 0 0016 13.63V2.37A2.37 2.37 0 0013.63 0zM4.94 13.4H2.83V6.6h2.11v6.8zM3.88 5.67a1.22 1.22 0 110-2.45 1.22 1.22 0 010 2.45zm9.52 7.73h-2.1V10.1c0-.79-.02-1.8-1.1-1.8-1.1 0-1.27.86-1.27 1.74v3.36H6.83V6.6h2.02v.93h.03c.28-.53.97-1.1 2-1.1 2.13 0 2.52 1.4 2.52 3.23v3.74z"/></svg>
+        <span>LinkedIn</span>
+      </a>
+      {{ end }}
+      {{ if .rss }}{{ with site.Home.OutputFormats.Get "rss" }}
+      <a href="{{ .RelPermalink }}" class="flex items-center gap-3 px-[13px] py-[11px] rounded-[11px] text-sb-fg-muted hover:bg-sb-surface hover:text-sb-fg transition text-[14.5px] border border-transparent">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" class="flex-shrink-0"><path d="M3.43 9.43A3.14 3.14 0 016.57 12.57H4.86A1.43 1.43 0 003.43 11.14zM2 6.57A6 6 0 018 12.57H6.29A4.29 4.29 0 002 8.29zM2 3.43A9.14 9.14 0 0111.14 12.57H9.43A7.43 7.43 0 002 5.14zM4.57 11.71a1.14 1.14 0 11-2.28 0 1.14 1.14 0 012.28 0z"/></svg>
+        <span>RSS</span>
+      </a>
+      {{ end }}{{ end }}
+    </div>
+    {{ end }}
+
+    {{/* 검색 */}}
+    <form action="{{ $home }}" method="get" role="search" class="relative flex items-center">
+      <span class="absolute left-3 flex text-sb-fg-subtle pointer-events-none"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="5"/><line x1="11" y1="11" x2="14.5" y2="14.5"/></svg></span>
+      <input data-search name="q" type="search" value="" placeholder="글 검색" autocomplete="off"
+             class="w-full pl-9 pr-3 py-[10px] rounded-[10px] border border-sb-border bg-sb-surface text-sb-fg text-[13.5px] outline-none placeholder:text-sb-fg-subtle focus:border-sb-accent focus:ring-2 focus:ring-sb-accent/20 transition"/>
+    </form>
+
+    {{/* 카테고리 */}}
+    {{ with site.Taxonomies.categories }}{{ if gt (len .) 0 }}
+    <div class="flex flex-col gap-1.5">
+      <span class="font-mono text-[10px] tracking-[0.1em] uppercase text-sb-fg px-1 mb-0.5">카테고리</span>
+      <a href="{{ $home }}" class="flex items-center justify-between w-full px-[11px] py-[9px] rounded-[10px] text-[13.5px] border border-transparent transition {{ if $allActive }}bg-sb-accent/15 text-sb-accent font-semibold{{ else }}text-sb-fg-muted hover:bg-sb-surface hover:text-sb-fg{{ end }}">
+        <span class="flex items-center gap-2.5"><span class="w-[7px] h-[7px] rounded-full flex-shrink-0 {{ if $allActive }}bg-sb-accent{{ else }}bg-sb-fg-subtle{{ end }}"></span>모든 글</span>
+        <span class="font-mono text-[11px] opacity-65">{{ len site.RegularPages }}</span>
+      </a>
+      {{ range $name, $pages := . }}
+        {{ $href := printf "/categories/%s/" ($name | urlize) | relLangURL }}
+        {{ $label := $name }}
+        {{ $active := false }}
+        {{ with site.GetPage (printf "/categories/%s" $name) }}{{ $href = .RelPermalink }}{{ $label = .Title }}{{ $active = eq .RelPermalink $page.RelPermalink }}{{ end }}
+        <a href="{{ $href }}" class="flex items-center justify-between w-full px-[11px] py-[9px] rounded-[10px] text-[13.5px] border border-transparent transition {{ if $active }}bg-sb-accent/15 text-sb-accent font-semibold{{ else }}text-sb-fg-muted hover:bg-sb-surface hover:text-sb-fg{{ end }}">
+          <span class="flex items-center gap-2.5"><span class="w-[7px] h-[7px] rounded-full flex-shrink-0 {{ if $active }}bg-sb-accent{{ else }}bg-sb-fg-subtle{{ end }}"></span>{{ $label }}</span>
+          <span class="font-mono text-[11px] opacity-65">{{ len $pages }}</span>
+        </a>
+      {{ end }}
+    </div>
+    {{ end }}{{ end }}
+
+    {{/* 태그 */}}
+    {{ with site.Taxonomies.tags }}{{ if gt (len .) 0 }}
+    <div class="flex flex-col gap-2.5">
+      <span class="font-mono text-[10px] tracking-[0.1em] uppercase text-sb-fg px-1">태그</span>
+      <div class="flex flex-wrap gap-[7px]">
+        {{ range $name, $pages := . }}
+          {{ $href := printf "/tags/%s/" ($name | urlize) | relLangURL }}
+          {{ $label := $name }}
+          {{ $active := false }}
+          {{ with site.GetPage (printf "/tags/%s" $name) }}{{ $href = .RelPermalink }}{{ $label = .Title }}{{ $active = eq .RelPermalink $page.RelPermalink }}{{ end }}
+          <a href="{{ $href }}" class="font-mono text-[11.5px] px-[10px] py-[5px] rounded-lg border transition {{ if $active }}bg-sb-accent text-[#06140d] border-sb-accent font-medium{{ else }}bg-sb-surface text-sb-fg-muted border-transparent hover:border-sb-accent hover:text-sb-accent{{ end }}">#{{ $label }}</a>
+        {{ end }}
+      </div>
+    </div>
+    {{ end }}{{ end }}
+
+    {{/* 푸터 */}}
+    <div class="lg:mt-auto pt-5 border-t border-sb-border">
+      <span class="font-mono text-[10px] text-sb-fg-subtle px-1">© {{ now.Year }} · {{ site.Title }}</span>
+    </div>
+  </div>
+  </div>
+</aside>

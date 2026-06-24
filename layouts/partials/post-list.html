@@ -1,0 +1,30 @@
+{{- /* 목록 뷰. dict 인자: pages(필수), heading, filterLabel, filterIsCat */ -}}
+{{- $pages := .pages -}}
+{{- $heading := .heading | default "Writing" -}}
+<div>
+  <div class="flex items-end justify-between gap-6 flex-wrap mb-2">
+    <h1 class="m-0 font-display font-bold text-[32px] sm:text-[40px] tracking-[-0.025em] text-fg">{{ $heading }}</h1>
+    <span data-result-count class="font-mono text-xs text-fg-subtle pb-[7px]">{{ len $pages }}개의 글</span>
+  </div>
+
+  {{ with .filterLabel }}
+  <div class="flex items-center gap-2.5 mb-6">
+    <span class="font-mono text-xs text-fg-subtle">필터</span>
+    <span class="{{ if $.filterIsCat }}cat-badge{{ else }}tag-badge{{ end }}">{{ . }}</span>
+    <a href="{{ site.Home.RelPermalink }}" class="font-mono text-xs text-fg-muted underline underline-offset-[3px] hover:text-fg">해제</a>
+  </div>
+  {{ end }}
+
+  <div data-post-list class="flex flex-col gap-3.5">
+    {{ range $pages }}
+      {{ partial "post-card.html" . }}
+    {{ end }}
+  </div>
+
+  <nav data-pager class="pager" hidden aria-label="페이지 이동"></nav>
+
+  <div data-empty hidden class="py-16 text-center">
+    <p class="font-mono text-[13px] text-fg-subtle m-0 mb-1.5">검색 결과가 없어요</p>
+    <button type="button" data-clear-search class="font-mono text-[13px] text-accent bg-transparent border-0 cursor-pointer underline underline-offset-[3px]">검색 초기화</button>
+  </div>
+</div>

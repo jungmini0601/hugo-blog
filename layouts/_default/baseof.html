@@ -3,11 +3,22 @@
 <head>
   {{ partial "head.html" . }}
 </head>
-<body class="min-h-screen bg-white text-gray-900 antialiased flex flex-col">
-  {{ partial "header.html" . }}
-  <main class="mx-auto w-full max-w-2xl flex-1 px-4 py-10">
-    {{ block "main" . }}{{ end }}
-  </main>
-  {{ partial "footer.html" . }}
+<body class="min-h-screen bg-bg text-fg font-sans antialiased">
+  <div class="flex flex-col lg:flex-row min-h-screen">
+    {{ partial "sidebar.html" . }}
+    <main class="sb-scroll flex-1 min-w-0 w-full max-w-[1000px] px-5 py-10 sm:px-8 lg:px-14 lg:py-16">
+      {{ block "main" . }}{{ end }}
+    </main>
+  </div>
+
+  {{ with resources.Get "js/blog.js" }}
+    {{ if hugo.IsServer }}
+      <script src="{{ .RelPermalink }}" defer></script>
+    {{ else }}
+      {{ with . | minify | fingerprint }}
+        <script src="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous" defer></script>
+      {{ end }}
+    {{ end }}
+  {{ end }}
 </body>
 </html>

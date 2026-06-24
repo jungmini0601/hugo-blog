@@ -4,49 +4,170 @@
 @source "hugo_stats.json";
 
 /* ---------------------------------------------------------------
-   v1 기본 베이스라인 타이포그래피 (렌더된 글 본문)
-   정교한 비주얼은 추후 직접 교체 예정 — 이 블록만 갈아끼우면 됨.
+   디자인 토큰 — "Dev Blog" (Claude Design)
+   라이트 본문 + 다크 사이드바. 색/폰트를 여기서 한 번에 조정.
+   --------------------------------------------------------------- */
+@theme {
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* 본문(라이트) */
+  --color-bg: #f9f9fa;
+  --color-surface: #ffffff;
+  --color-border: #eaebec;
+  --color-border-strong: #dbdcdf;
+  --color-fg: #1b1c1e;
+  --color-fg-muted: #5a5c63;
+  --color-fg-subtle: #878a93;
+  --color-accent: #1ba673;
+  --color-code: #f4f5f6;
+
+  /* 배지 */
+  --color-cat-bg: #c6fae6;
+  --color-cat-fg: #15795a;
+  --color-tag-bg: #f1f2f3;
+  --color-tag-fg: #5a5c63;
+
+  /* 사이드바(다크) */
+  --color-sb-bg: #1b1c1e;
+  --color-sb-surface: #27282c;
+  --color-sb-border: #37383c;
+  --color-sb-fg: #f1f2f3;
+  --color-sb-fg-muted: #aeb0b6;
+  --color-sb-fg-subtle: #70737c;
+  --color-sb-accent: #0dd78c;
+}
+
+::selection { background: #d8f5e9; }
+
+html { scroll-behavior: smooth; }
+
+/* 모바일에서 햄버거로 펼친 사이드바 패널 ([attr].class 가 .hidden 보다 우선) */
+[data-menu-panel].is-open { display: flex; }
+
+/* 배지 — 카드/아티클/사이드바에서 공통 사용 */
+.cat-badge {
+  display: inline-flex; align-items: center;
+  font-family: var(--font-mono); font-size: 10.5px; font-weight: 500;
+  letter-spacing: .06em; text-transform: uppercase;
+  padding: 4px 9px; border-radius: 7px;
+  background: var(--color-cat-bg); color: var(--color-cat-fg);
+}
+.tag-badge {
+  display: inline-flex; align-items: center;
+  font-family: var(--font-mono); font-size: 11px;
+  padding: 3px 9px; border-radius: 7px;
+  background: var(--color-tag-bg); color: var(--color-tag-fg);
+  text-decoration: none;
+}
+a.tag-badge:hover { color: var(--color-accent); }
+
+/* 얇은 스크롤바 (디자인 원본의 .sb-scroll) */
+.sb-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+.sb-scroll::-webkit-scrollbar-thumb { background: var(--color-border-strong); border-radius: 8px; }
+.sb-scroll::-webkit-scrollbar-track { background: transparent; }
+
+/* ---------------------------------------------------------------
+   클라이언트 페이지네이션 버튼 (JS가 동적으로 생성하므로 Tailwind 유틸
+   대신 컴포넌트 클래스로 정의한다)
+   --------------------------------------------------------------- */
+.pager { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 36px; }
+.pager button {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 34px; height: 34px; padding: 0 9px;
+  border-radius: 9px;
+  font-family: var(--font-mono); font-size: 13px;
+  background: var(--color-surface); color: var(--color-fg-muted);
+  border: 1px solid var(--color-border);
+  cursor: pointer; transition: all .15s ease;
+}
+.pager button:hover:not(:disabled) { border-color: var(--color-border-strong); color: var(--color-fg); }
+.pager button[aria-current="page"] {
+  background: var(--color-fg); color: #fff; border-color: var(--color-fg); font-weight: 500;
+}
+.pager button:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ---------------------------------------------------------------
+   렌더된 글 본문 타이포그래피 (.post-content)
+   디자인의 아티클 본문 스타일을 따른다.
    --------------------------------------------------------------- */
 .post-content {
-  line-height: 1.75;
+  font-size: 16.5px;
+  line-height: 1.78;
+  color: var(--color-fg);
   word-break: keep-all;
+  overflow-wrap: anywhere;
 }
-.post-content h1 { font-size: 1.75rem; font-weight: 700; margin: 2rem 0 0.75rem; }
-.post-content h2 { font-size: 1.5rem; font-weight: 700; margin: 2rem 0 0.75rem; }
-.post-content h3 { font-size: 1.25rem; font-weight: 600; margin: 1.5rem 0 0.5rem; }
-.post-content p { margin: 1rem 0; }
-.post-content ul { list-style: disc; padding-left: 1.5rem; margin: 1rem 0; }
-.post-content ol { list-style: decimal; padding-left: 1.5rem; margin: 1rem 0; }
-.post-content li { margin: 0.25rem 0; }
-.post-content a { color: #2563eb; text-decoration: underline; }
-.post-content blockquote {
-  border-left: 3px solid #e5e7eb;
-  padding-left: 1rem;
-  color: #4b5563;
-  margin: 1rem 0;
-}
-.post-content pre {
-  background: #f6f8fa;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  overflow-x: auto;
-  margin: 1.25rem 0;
-  font-size: 0.875rem;
+.post-content > p:first-of-type {
+  font-size: 19px;
   line-height: 1.6;
+  color: var(--color-fg-muted);
 }
-.post-content code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+.post-content p { margin: 0 0 1.4rem; }
+.post-content h1,
+.post-content h2,
+.post-content h3,
+.post-content h4 {
+  font-family: var(--font-display);
+  letter-spacing: -.015em;
+  color: var(--color-fg);
+  line-height: 1.25;
 }
+.post-content h1 { font-size: 1.75rem; font-weight: 700; margin: 2.4rem 0 1rem; }
+.post-content h2 { font-size: 1.45rem; font-weight: 600; margin: 2.4rem 0 1rem; }
+.post-content h3 { font-size: 1.2rem;  font-weight: 600; margin: 1.8rem 0 .7rem; }
+.post-content h4 { font-size: 1.05rem; font-weight: 600; margin: 1.5rem 0 .5rem; }
+.post-content a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.post-content a:hover { text-decoration-thickness: 2px; }
+.post-content ul { list-style: disc; padding-left: 1.4rem; margin: 1.2rem 0; }
+.post-content ol { list-style: decimal; padding-left: 1.4rem; margin: 1.2rem 0; }
+.post-content li { margin: 0.4rem 0; padding-left: 0.2rem; }
+.post-content li::marker { color: var(--color-fg-subtle); }
+.post-content blockquote {
+  margin: 1.6rem 0;
+  padding: 0.3rem 0 0.3rem 1.4rem;
+  border-left: 3px solid var(--color-accent);
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--color-fg-muted);
+}
+.post-content blockquote p:first-of-type { font-size: inherit; color: inherit; }
+.post-content pre {
+  margin: 1.6rem 0;
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: var(--color-code);
+  border: 1px solid var(--color-border);
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+.post-content code { font-family: var(--font-mono); }
 .post-content :not(pre) > code {
-  background: #f1f5f9;
-  padding: 0.1rem 0.35rem;
-  border-radius: 0.25rem;
-  font-size: 0.875em;
+  background: var(--color-tag-bg);
+  padding: 0.12rem 0.36rem;
+  border-radius: 6px;
+  font-size: 0.86em;
+  color: var(--color-fg);
 }
 .post-content img {
-  border-radius: 0.5rem;
-  margin: 1.5rem 0;
+  border-radius: 12px;
+  margin: 1.8rem 0;
   max-width: 100%;
   height: auto;
 }
-.post-content hr { border: 0; border-top: 1px solid #e5e7eb; margin: 2rem 0; }
+.post-content hr { border: 0; border-top: 1px solid var(--color-border); margin: 2.4rem 0; }
+.post-content table {
+  width: 100%; border-collapse: collapse; margin: 1.6rem 0; font-size: 0.95rem;
+}
+.post-content th, .post-content td {
+  border: 1px solid var(--color-border); padding: 0.5rem 0.75rem; text-align: left;
+}
+.post-content th { background: var(--color-code); font-weight: 600; }

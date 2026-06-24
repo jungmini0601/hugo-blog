@@ -1,15 +1,31 @@
 {{ define "main" }}
-  <h1 class="text-2xl font-bold tracking-tight mb-8">{{ .Title }}</h1>
-  {{ with .Content }}<div class="post-content mb-8">{{ . }}</div>{{ end }}
-  <ul class="space-y-8">
-    {{ range .Pages }}
-      <li>
-        <a href="{{ .RelPermalink }}" class="block group">
-          <h2 class="text-lg font-medium group-hover:underline">{{ .Title }}</h2>
-          {{ with .Date }}<div class="text-sm text-gray-500 mt-1"><time datetime="{{ .Format "2006-01-02" }}">{{ .Format "2006.01.02" }}</time></div>{{ end }}
-          {{ with .Description }}<p class="text-gray-600 mt-2">{{ . }}</p>{{ end }}
-        </a>
-      </li>
-    {{ end }}
-  </ul>
+  {{ if eq .Kind "taxonomy" }}
+    {{/* 태그/카테고리 인덱스 — 텀 목록 */}}
+    {{ $label := cond (eq .Data.Singular "categories") "카테고리" "태그" }}
+    <div>
+      <h1 class="m-0 mb-6 font-display font-bold text-[32px] sm:text-[40px] tracking-[-0.025em] text-fg">{{ $label }}</h1>
+      {{ if .Pages }}
+      <div class="flex flex-wrap gap-2.5">
+        {{ range .Pages.ByTitle }}
+          <a href="{{ .RelPermalink }}" class="inline-flex items-center gap-2 font-mono text-[13px] px-3 py-1.5 rounded-lg bg-surface border border-border text-fg-muted hover:border-border-strong hover:text-fg transition">
+            {{ if eq $.Data.Singular "tags" }}#{{ end }}{{ .Title }} <span class="text-fg-subtle">{{ len .Pages }}</span>
+          </a>
+        {{ end }}
+      </div>
+      {{ else }}
+      <p class="font-mono text-[13px] text-fg-subtle">아직 항목이 없어요.</p>
+      {{ end }}
+    </div>
+  {{ else if eq .Kind "term" }}
+    {{/* 특정 태그/카테고리로 필터된 글 목록 */}}
+    {{ $isCat := eq .Data.Singular "categories" }}
+    {{ partial "post-list.html" (dict
+        "pages" .Pages
+        "heading" "Writing"
+        "filterLabel" (cond $isCat .Title (printf "#%s" .Title))
+        "filterIsCat" $isCat) }}
+  {{ else }}
+    {{/* 섹션 목록 (/posts/ 등) */}}
+    {{ partial "post-list.html" (dict "pages" .Pages "heading" "Writing") }}
+  {{ end }}
 {{ end }}

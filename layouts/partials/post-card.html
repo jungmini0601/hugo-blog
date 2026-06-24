@@ -1,0 +1,15 @@
+{{- /* 글 카드. context = 글 페이지. data-* 속성은 클라이언트 검색/페이지네이션용. */ -}}
+<a href="{{ .RelPermalink }}" data-post
+   data-search="{{ lower (printf "%s %s %s %s" .Title .Description (delimit (.Params.tags | default (slice)) " ") (delimit (.Params.categories | default (slice)) " ")) }}"
+   class="post-card group flex flex-col gap-[11px] px-6 py-[22px] bg-surface border border-border rounded-2xl shadow-[0_1px_2px_rgba(20,28,24,0.04)] hover:border-border-strong hover:shadow-[0_6px_20px_rgba(20,28,24,0.08)] hover:-translate-y-0.5 transition">
+  <div class="flex items-center gap-[11px] flex-wrap">
+    {{ with .Params.categories }}{{ with index . 0 }}<span class="cat-badge">{{ . }}</span>{{ end }}{{ end }}
+    {{ with .Date }}<span class="font-mono text-[11px] text-fg-subtle"><time datetime="{{ .Format "2006-01-02" }}">{{ .Format "2006.01.02" }}</time></span>{{ end }}
+  </div>
+  <h2 class="m-0 font-display font-semibold text-[22px] tracking-[-0.015em] leading-[1.22] text-fg group-hover:text-accent transition-colors">{{ .Title }}</h2>
+  {{ with .Description }}<p class="m-0 text-sm leading-[1.6] text-fg-muted max-w-[640px]">{{ . }}</p>{{ end }}
+  <div class="flex items-center gap-2 mt-1 flex-wrap">
+    {{ range .Params.tags }}<span class="tag-badge">#{{ . }}</span>{{ end }}
+    <span class="font-mono text-[11px] text-fg-subtle ml-0.5">{{ .ReadingTime }}분</span>
+  </div>
+</a>

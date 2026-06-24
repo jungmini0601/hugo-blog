@@ -1,19 +1,36 @@
 {{ define "main" }}
-  <article>
-    {{ with .Params.cover }}{{ with $.Resources.GetMatch . }}
-      <img src="{{ .RelPermalink }}" alt="{{ $.Title }}" class="w-full rounded-lg mb-6">
-    {{ end }}{{ end }}
-    <h1 class="text-3xl font-bold tracking-tight mb-2">{{ .Title }}</h1>
-    <div class="text-sm text-gray-500 mb-8 flex flex-wrap items-center gap-x-3 gap-y-1">
-      {{ with .Date }}<time datetime="{{ .Format "2006-01-02" }}">{{ .Format "2006.01.02" }}</time>{{ end }}
-      {{ with .Params.tags }}
-        <span class="flex flex-wrap gap-2">
-          {{ range . }}<a href="{{ (printf "/tags/%s/" (. | urlize)) | relURL }}" class="text-blue-600 hover:underline">#{{ . }}</a>{{ end }}
-        </span>
-      {{ end }}
+  <article class="max-w-[680px]">
+    <a href="{{ site.Home.RelPermalink }}" class="inline-flex items-center gap-[7px] font-mono text-[12.5px] text-fg-muted hover:text-accent transition mb-8">
+      <span class="text-[15px]">←</span> 목록으로
+    </a>
+
+    <div class="flex items-center gap-[11px] flex-wrap mb-[18px]">
+      {{ with .Params.categories }}{{ with index . 0 }}<span class="cat-badge">{{ . }}</span>{{ end }}{{ end }}
+      <span class="font-mono text-[11px] text-fg-subtle">
+        {{ with .Date }}<time datetime="{{ .Format "2006-01-02" }}">{{ .Format "2006.01.02" }}</time> · {{ end }}{{ .ReadingTime }}분 읽기
+      </span>
     </div>
+
+    <h1 class="m-0 mb-5 font-display font-bold text-[clamp(27px,5vw,38px)] tracking-[-0.025em] leading-[1.12] text-fg">{{ .Title }}</h1>
+
+    <div class="border-b border-border my-[30px]"></div>
+
+    {{ with .Params.cover }}{{ with $.Resources.GetMatch . }}
+      <img src="{{ .RelPermalink }}" alt="{{ $.Title }}" class="w-full rounded-xl border border-border mb-8">
+    {{ end }}{{ end }}
+
     <div class="post-content">
       {{ .Content }}
     </div>
+
+    {{ with .Params.tags }}
+    <div class="flex flex-wrap gap-2 mt-9 pt-7 border-t border-border">
+      {{ range . }}
+        <a href="{{ (printf "/tags/%s/" (. | urlize)) | relLangURL }}" class="tag-badge">#{{ . }}</a>
+      {{ end }}
+    </div>
+    {{ end }}
+
+    {{ partial "comments.html" . }}
   </article>
 {{ end }}
