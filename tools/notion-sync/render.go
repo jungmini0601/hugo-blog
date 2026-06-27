@@ -70,6 +70,15 @@ func buildFrontMatter(p Page, title, slug, bundleDir string) string {
 		b.WriteString("tags: [" + strings.Join(names, ", ") + "]\n")
 	}
 
+	// 카테고리(Notion "카테고리" multi_select) → front matter categories
+	if cats := p.prop("카테고리").MultiSelect; len(cats) > 0 {
+		names := make([]string, 0, len(cats))
+		for _, c := range cats {
+			names = append(names, yamlString(c.Name))
+		}
+		b.WriteString("categories: [" + strings.Join(names, ", ") + "]\n")
+	}
+
 	// 커버 이미지(1시간 만료 대상): DB "Cover" 파일 속성 우선, 없으면 페이지 배너.
 	coverURL := ""
 	if files := p.prop("Cover").Files; len(files) > 0 {

@@ -1,36 +1,62 @@
 {{ define "main" }}
-  <article class="max-w-[680px]">
-    <a href="{{ site.Home.RelPermalink }}" class="inline-flex items-center gap-[7px] font-mono text-[12.5px] text-fg-muted hover:text-accent transition mb-8">
-      <span class="text-[15px]" aria-hidden="true">←</span> 목록으로
-    </a>
+  {{/* 목차 HTML을 한 번만 생성하고, 중복 id 방지를 위해 id="TableOfContents" → class="toc-nav" 로 치환.
+       모바일(상단 접이식 박스)과 데스크톱(우측 sticky 레일) 두 곳에서 재사용한다. */}}
+  {{ $hasTOC := strings.Contains .TableOfContents "<a" }}
+  {{ $toc := replace (printf "%s" .TableOfContents) "id=\"TableOfContents\"" "class=\"toc-nav\"" | safeHTML }}
 
-    <div class="flex items-center gap-[11px] flex-wrap mb-[18px]">
-      {{ with .Params.categories }}{{ with index . 0 }}<span class="cat-badge">{{ . }}</span>{{ end }}{{ end }}
-      <span class="font-mono text-[11px] text-fg-subtle">
-        {{ with .Date }}<time datetime="{{ .Format "2006-01-02" }}">{{ .Format "2006.01.02" }}</time> · {{ end }}{{ .ReadingTime }}분 읽기
-      </span>
-    </div>
+  <div class="xl:flex xl:gap-10 xl:items-start">
+    <article class="max-w-[680px] xl:order-1 xl:flex-1 xl:min-w-0">
+      <a href="{{ site.Home.RelPermalink }}" class="inline-flex items-center gap-[7px] font-mono text-[12.5px] text-fg-muted hover:text-accent transition mb-8">
+        <span class="text-[15px]" aria-hidden="true">←</span> 목록으로
+      </a>
 
-    <h1 class="m-0 mb-5 font-display font-bold text-[clamp(27px,5vw,38px)] tracking-[-0.025em] leading-[1.12] text-fg">{{ .Title }}</h1>
+      <div class="flex items-center gap-[11px] flex-wrap mb-[18px]">
+        {{ with .Params.categories }}{{ with index . 0 }}<span class="cat-badge">{{ . }}</span>{{ end }}{{ end }}
+        <span class="font-mono text-[11px] text-fg-subtle">
+          {{ with .Date }}<time datetime="{{ .Format "2006-01-02" }}">{{ .Format "2006.01.02" }}</time> · {{ end }}{{ .ReadingTime }}분 읽기
+        </span>
+      </div>
 
-    <div class="border-b border-border my-[30px]"></div>
+      <h1 class="m-0 mb-5 font-display font-bold text-[clamp(27px,5vw,38px)] tracking-[-0.025em] leading-[1.12] text-fg">{{ .Title }}</h1>
 
-    {{ with .Params.cover }}{{ with $.Resources.GetMatch . }}
-      <img src="{{ .RelPermalink }}" alt="{{ $.Title }}" class="w-full rounded-xl border border-border mb-8">
-    {{ end }}{{ end }}
+      <div class="border-b border-border my-[30px]"></div>
 
-    <div class="post-content">
-      {{ .Content }}
-    </div>
+      {{ with .Params.cover }}{{ with $.Resources.GetMatch . }}
+        <img src="{{ .RelPermalink }}" alt="{{ $.Title }}" class="w-full rounded-xl border border-border mb-8">
+      {{ end }}{{ end }}
 
-    {{ with .Params.tags }}
-    <div class="flex flex-wrap gap-2 mt-9 pt-7 border-t border-border">
-      {{ range . }}
-        <a href="{{ (printf "/tags/%s/" (. | urlize)) | relLangURL }}" class="tag-badge">#{{ . }}</a>
+      {{ if $hasTOC }}
+      {{/* 모바일/좁은 화면: 본문 상단 접이식 목차 (xl 이상에선 숨기고 우측 레일 사용) */}}
+      <details class="post-toc xl:hidden" open data-toc>
+        <summary>
+          <span>Table Of Contents</span>
+          <svg class="post-toc__chev" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+        </summary>
+        {{ $toc }}
+      </details>
       {{ end }}
-    </div>
-    {{ end }}
 
-    {{ partial "comments.html" . }}
-  </article>
+      <div class="post-content">
+        {{ .Content }}
+      </div>
+
+      {{ with .Params.tags }}
+      <div class="flex flex-wrap gap-2 mt-9 pt-7 border-t border-border">
+        {{ range . }}
+          <a href="{{ (printf "/tags/%s/" (. | urlize)) | relLangURL }}" class="tag-badge">#{{ . }}</a>
+        {{ end }}
+      </div>
+      {{ end }}
+
+      {{ partial "comments.html" . }}
+    </article>
+
+    {{ if $hasTOC }}
+    {{/* 넓은 화면: 글 우측 sticky 목차 레일 */}}
+    <aside class="toc-rail hidden xl:block xl:order-2 xl:w-[230px] xl:flex-shrink-0 xl:sticky xl:top-16" data-toc aria-label="Table Of Contents">
+      <p class="toc-rail__label">Table Of Contents</p>
+      {{ $toc }}
+    </aside>
+    {{ end }}
+  </div>
 {{ end }}

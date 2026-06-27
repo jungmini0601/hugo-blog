@@ -11,18 +11,22 @@ enableRobotsTXT = true
   description = "개인 기술 블로그"
   # 사이드바 로고 아래 작은 캡션
   tagline = "notes on building software"
+  # 저자 프로필 사진 (static/ 기준 경로). 비우면 이니셜 원으로 대체.
+  avatar = "profile.jpg"
   [params.author]
-    name = "Novel"
-    bio = "소프트웨어를 만드는 과정에 대해 기록합니다."
+    name = "jungmini"
+    bio = "시행착오를 통해 성장하는 방법"
   # 비워두면 해당 링크는 사이드바에 표시되지 않음
   [params.social]
-    github = "https://github.com/Novel-OxO"
+    github = "https://github.com/jungmini0601"
     linkedin = ""
-    rss = true
+    instagram = "https://www.instagram.com/jungmini0601/"
+    threads = "https://www.threads.com/@jungmini0601"
+    rss = false
   # GitHub Discussions 기반 댓글(giscus). 값을 채우면 아티클 하단에 자동 노출.
   # https://giscus.app 에서 repo / repoId / category / categoryId 발급
   [params.giscus]
-    repo = "Novel-OxO/hugo-blog"
+    repo = "jungmini0601/hugo-blog"
     repoId = "R_kgDOTCs5Yw"
     category = "Announcements"
     categoryId = "DIC_kwDOTCs5Y84C_-VM"
@@ -40,6 +44,11 @@ enableRobotsTXT = true
     tabWidth = 2
   [markup.goldmark.renderer]
     unsafe = true
+  # 글 상세 목차(TOC): H2~H3만 수집
+  [markup.tableOfContents]
+    startLevel = 2
+    endLevel = 3
+    ordered = false
 
 [outputs]
   home = ["HTML", "RSS"]

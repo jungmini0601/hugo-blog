@@ -11,6 +11,83 @@
     });
   }
 
+  /* ── 읽기 진행률 바: 스크롤 위치를 최상단 바 너비로 반영 ── */
+  var progressBar = document.querySelector('[data-progress]');
+  if (progressBar) {
+    var updateProgress = function () {
+      var doc = document.documentElement;
+      var max = doc.scrollHeight - doc.clientHeight;
+      var pct = max > 0 ? (window.scrollY / max) * 100 : 0;
+      if (pct < 0) pct = 0; else if (pct > 100) pct = 100;
+      progressBar.style.width = pct + '%';
+    };
+    var progressTicking = false;
+    var onProgressScroll = function () {
+      if (!progressTicking) {
+        window.requestAnimationFrame(function () { updateProgress(); progressTicking = false; });
+        progressTicking = true;
+      }
+    };
+    window.addEventListener('scroll', onProgressScroll, { passive: true });
+    window.addEventListener('resize', onProgressScroll);
+    updateProgress();
+  }
+
+  /* ── 글 목차(TOC): 스크롤 위치에 따라 현재 섹션 하이라이트 ──
+     모바일 박스 + 데스크톱 레일 두 목차([data-toc])의 링크를 함께 처리한다. */
+  var tocBoxes = Array.prototype.slice.call(document.querySelectorAll('[data-toc]'));
+  if (tocBoxes.length) {
+    var linksById = {};   // heading id → [a, a]
+    var headings = [];
+    var seenId = {};
+    tocBoxes.forEach(function (box) {
+      Array.prototype.slice.call(box.querySelectorAll('a')).forEach(function (a) {
+        var raw = (a.getAttribute('href') || '').replace(/^#/, '');
+        if (!raw) return;
+        var id = raw;
+        try { id = decodeURIComponent(raw); } catch (e) {}
+        var el = document.getElementById(id) || document.getElementById(raw);
+        if (!el) return;
+        (linksById[el.id] = linksById[el.id] || []).push(a);
+        if (!seenId[el.id]) { seenId[el.id] = true; headings.push(el); }
+      });
+    });
+    headings.sort(function (a, b) {
+      return a.getBoundingClientRect().top - b.getBoundingClientRect().top;
+    });
+
+    if (headings.length) {
+      var activeId = null;
+      var setActive = function (id) {
+        if (activeId === id) return;
+        if (activeId && linksById[activeId]) {
+          linksById[activeId].forEach(function (a) { a.classList.remove('is-active'); });
+        }
+        if (id && linksById[id]) {
+          linksById[id].forEach(function (a) { a.classList.add('is-active'); });
+        }
+        activeId = id;
+      };
+      var spy = function () {
+        var pos = window.scrollY + 120;
+        var cur = headings[0];
+        for (var i = 0; i < headings.length; i++) {
+          if (headings[i].getBoundingClientRect().top + window.scrollY <= pos) cur = headings[i];
+          else break;
+        }
+        setActive(cur.id);
+      };
+      var ticking = false;
+      window.addEventListener('scroll', function () {
+        if (!ticking) {
+          window.requestAnimationFrame(function () { spy(); ticking = false; });
+          ticking = true;
+        }
+      }, { passive: true });
+      spy();
+    }
+  }
+
   /* ── 글 목록: 클라이언트 검색 + 페이지네이션 ── */
   var listEl = document.querySelector('[data-post-list]');
   if (!listEl) return;
