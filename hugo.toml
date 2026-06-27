@@ -22,10 +22,10 @@ enableRobotsTXT = true
   # GitHub Discussions 기반 댓글(giscus). 값을 채우면 아티클 하단에 자동 노출.
   # https://giscus.app 에서 repo / repoId / category / categoryId 발급
   [params.giscus]
-    repo = ""
-    repoId = ""
+    repo = "Novel-OxO/hugo-blog"
+    repoId = "R_kgDOTCs5Yw"
     category = "Announcements"
-    categoryId = ""
+    categoryId = "DIC_kwDOTCs5Y84C_-VM"
     mapping = "pathname"
     theme = "light"
 
